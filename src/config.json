@@ -1,0 +1,10 @@
+{
+	"database": {
+        "connectionLimit" : 2,
+        "host"            : "127.0.0.1",
+        "user"            : "bususer",
+        "password"        : "1234",
+        "database"        : "busdb",
+        "charset"         : "utf8_general_ci"
+    }
+}

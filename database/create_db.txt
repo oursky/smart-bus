@@ -1,0 +1,5 @@
+CREATE USER 'bususer'@'localhost' IDENTIFIED BY '1234';
+CREATE USER 'bususer'@'%' IDENTIFIED BY '1234';
+CREATE DATABASE busdb;
+GRANT ALL ON busdb.* TO 'bususer'@'localhost'
+GRANT ALL ON busdb.* TO 'bususer'@'%'

@@ -1,0 +1,62 @@
+delimiter //
+
+DROP PROCEDURE IF EXISTS sp_busstop_set //
+CREATE PROCEDURE sp_busstop_set(
+  _route_id    VARCHAR(16),
+  _bound       TINYINT UNSIGNED,
+  _stop_index  INT UNSIGNED,
+  _bsicode     VARCHAR(32),
+  _name_en     VARCHAR(255),
+  _name_tc     VARCHAR(255),
+  _name_sc     VARCHAR(255),
+  _location_en VARCHAR(255),
+  _location_tc VARCHAR(255),
+  _location_sc VARCHAR(255),
+  _x           DOUBLE,
+  _y           DOUBLE,
+  _fare        FLOAT,
+  _bound_time1 INT UNSIGNED,
+  _bound_time2 INT UNSIGNED
+)
+BEGIN
+    INSERT INTO t_busstop(route_id,bound,stop_index,bsicode,
+                          name_en, name_tc, name_sc,
+                          location_en, location_tc, location_sc,
+                          x, y, fare,
+                          bound_time1, bound_time2,
+                          mtime)
+      VALUES (_route_id,_bound,_stop_index,_bsicode,
+                          _name_en, _name_tc, _name_sc,
+                          _location_en, _location_tc, _location_sc,
+                          _x, _y, _fare,
+                          _bound_time1, _bound_time2,
+                          CURRENT_TIMESTAMP)
+      ON DUPLICATE KEY UPDATE 
+          bsicode=_bsicode,
+          name_en=_name_en,
+          name_tc=_name_tc,
+          name_sc=_name_sc,
+          location_en=_location_en,
+          location_tc=_location_tc,
+          location_sc=_location_sc,
+          x=_x,
+          y=_y,
+          fare=_fare,
+          bound_time1=_bound_time1,
+          bound_time2=_bound_time2,
+          mtime=VALUES(mtime);
+END //
+
+DROP PROCEDURE IF EXISTS sp_busstop_seteta //
+CREATE PROCEDURE sp_busstop_seteta(
+  _route_id    VARCHAR(16),
+  _bound       TINYINT UNSIGNED,
+  _stop_index  INT UNSIGNED,
+  _eta         VARCHAR(255)
+)
+BEGIN
+    UPDATE t_busstop SET eta=_eta
+    WHERE route_id=_route_id AND bound=_bound AND stop_index=_stop_index;
+END //
+
+delimiter ;

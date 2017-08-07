@@ -1,0 +1,17 @@
+{
+  "name": "bus",
+  "description": "Real-Time Traffic Visualizer",
+  "version": "1.0.0",
+  "author": {
+    "name": "Calvin",
+    "email": "overflow@oursky.com"
+  },
+  "main": "main.js",
+  "scripts": {
+    "start-dev": "NODE_ENV=development node --harmony app.js app_dev.json",
+    "start-prod": "node --harmony app.js app_prod.json"
+  },
+  "dependencies": {
+    "mysql": "^2.13.0"
+  }
+}

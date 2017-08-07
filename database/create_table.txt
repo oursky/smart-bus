@@ -1,0 +1,39 @@
+DROP TABLE IF EXISTS t_route;
+CREATE TABLE t_route (
+  route_id    VARCHAR(16)      NOT NULL,
+  bound       TINYINT UNSIGNED NOT NULL,
+  origin_en   VARCHAR(255)     NOT NULL,
+  origin_tc   VARCHAR(255)     NOT NULL,
+  origin_sc   VARCHAR(255)     NOT NULL,
+  dest_en     VARCHAR(255)     NOT NULL,
+  dest_tc     VARCHAR(255)     NOT NULL,
+  dest_sc     VARCHAR(255)     NOT NULL,
+  airport     BOOL NOT NULL DEFAULT FALSE,
+  overnight   BOOL NOT NULL DEFAULT FALSE,
+  special     BOOL NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (route_id, bound) 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+DROP TABLE IF EXISTS t_busstop;
+CREATE TABLE t_busstop(
+  route_id    VARCHAR(16)      NOT NULL,
+  bound       TINYINT UNSIGNED NOT NULL,
+  stop_index  INT UNSIGNED     NOT NULL,
+  bsicode     VARCHAR(32)      NOT NULL,
+  name_en     VARCHAR(255)     NOT NULL,
+  name_tc     VARCHAR(255)     NOT NULL,
+  name_sc     VARCHAR(255)     NOT NULL,
+  location_en VARCHAR(255)     NOT NULL,
+  location_tc VARCHAR(255)     NOT NULL,
+  location_sc VARCHAR(255)     NOT NULL,
+  x           DOUBLE           NOT NULL,
+  y           DOUBLE           NOT NULL,
+  fare        FLOAT            NOT NULL,
+  bound_time1 INT UNSIGNED     NOT NULL DEFAULT 0,
+  bound_time2 INT UNSIGNED     NOT NULL DEFAULT 0,
+  mtime       TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  eta         VARCHAR(255)     NOT NULL DEFAULT '',
+  PRIMARY KEY (route_id, bound, stop_index) 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
