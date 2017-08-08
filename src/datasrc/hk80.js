@@ -11,9 +11,8 @@ class HK80Convertor {
 	constructor() {
 	}
     /**
-     * Set Bus-stop Information
+     * Get Lat,Lon from HK80 Coordinate
      * @public
-     * @param {!string} route_id Route Id, e.g. 12A
      * @param {!number} x        x coordinate in HK80
      * @param {!number} y	     y coordinate in HK80
      * @param {!function(number,number)} cb void callback(lat,lon)
