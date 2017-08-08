@@ -15,7 +15,6 @@ CREATE TABLE t_route (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-
 DROP TABLE IF EXISTS t_busstop;
 CREATE TABLE t_busstop(
   route_id    VARCHAR(16)      NOT NULL,
@@ -30,6 +29,8 @@ CREATE TABLE t_busstop(
   location_sc VARCHAR(255)     NOT NULL,
   x           DOUBLE           NOT NULL,
   y           DOUBLE           NOT NULL,
+  lat         DOUBLE           NOT NULL,
+  lon         DOUBLE           NOT NULL,
   fare        FLOAT            NOT NULL,
   bound_time1 INT UNSIGNED     NOT NULL DEFAULT 0,
   bound_time2 INT UNSIGNED     NOT NULL DEFAULT 0,

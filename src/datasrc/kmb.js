@@ -1,10 +1,22 @@
+/**
+ * Fetch data from KMB
+ *
+ * https://http://search.kmb.hk/KMBWebSite/
+ */
 module.exports = (function(){
 const http = require('http');
 
 class KMBGrabber {
 	constructor() {
 	}
-	get_bounds(route, cb) {
+    /**
+     * Get bounds of a route
+     * @public
+     * @param {!string} route    Route Id, e.g. 12A
+     * @param {!function(Array<number>)} cb void callback(bounds)
+     * @return {undefined} No return value
+     */
+     get_bounds(route, cb) {
 	    return http.get({
     	    hostname: 'search.kmb.hk',
         	path: '/KMBWebSite/Function/FunctionRequest.ashx?action=getroutebound&route=' + route
@@ -23,6 +35,14 @@ class KMBGrabber {
         	});
 	    });
 	}
+    /**
+     * Get bus-stops of a route
+     * @public
+     * @param {!string} route     Route Id, e.g. 12A
+     * @param {!number} bound     1 for forward, 2 for reverse
+     * @param {!function(Object)} cb void callback(json)
+     * @return {undefined} No return value
+     */
 	get_stops(route, bound, cb) {
 	    return http.get({
     	    hostname: 'search.kmb.hk',
@@ -36,7 +56,19 @@ class KMBGrabber {
         	});
 	    });
 	}
+    /**
+     * Get arrival estimation of a route for a specific bus stop
+     * @public
+     * @param {!string} route     Route Id, e.g. 12A
+     * @param {!number} bound     1 for forward, 2 for reverse
+     * @param {!number} index     index of bus stop, start from zero
+     * @param {!string} bsicode   BSIcode from get_stops() entry. in format X0000-X-000-1
+     * @param {!function(Array<string>)} cb void callback(timeStrings)
+     * @return {undefined} No return value
+     */
 	get_eta(route, bound, index, bsicode, cb) {
+		bsicode = bsicode.replace(/-/g, '');	// chop - characters
+
 		var now = new Date();
 		var utc = now.getTime();
 		var ms = utc % 100;
@@ -46,12 +78,6 @@ class KMBGrabber {
 		var token = route + sep + bound + sep + "1" + sep + bsicode + sep + index + sep + utc;
 		var token64 = "EA" + new Buffer(token).toString('base64');
 		var postData = "token="+encodeURIComponent(token64)+"&t="+encodeURIComponent(timestamp);
-		
-		console.log("Time: " + timestamp + ", utc: " + utc);
-		console.log("Token: " + token);
-		console.log("Token: " + token64);
-		console.log("Post: " + postData);
-	
 		
 		var options = {
     	    hostname: 'search.kmb.hk',
@@ -71,7 +97,11 @@ class KMBGrabber {
         	response.on('data', (d) => { body += d;} );
 	        response.on('end', () => {
 	        	var json = JSON.parse(body);
-	        	cb(json['data']);
+	        	var list = [];
+       			for (var item of json['data']['response']) {
+					list.push(item['ex']);
+				}
+	        	cb(list);
         	});
 	    });
 	    req.write(postData);

@@ -1,3 +1,6 @@
+/**
+ * Database wrapper
+ */ 
 module.exports = (function(){
 const mysql = require('mysql');
 
@@ -19,8 +22,10 @@ class Database {
      * @param {!string} location_en  Location of bus stop (English)
      * @param {!string} location_tc  Location of bus stop (Trad Chinese)
      * @param {!string} location_sc  Location of bus stop (Simplified Chinese)
-     * @param {!number} x            Location of bus stop
-     * @param {!number} y            Location of bus stop
+     * @param {!number} x            Location of bus stop in HK80 coordinate
+     * @param {!number} y            Location of bus stop in HK80 coordinate
+     * @param {!number} lat          Latitude of bus stop
+     * @param {!number} lon          Longitude of bus stop
      * @param {!number} fare         Fare
      * @param {!number} bound_time1  Bound time
      * @param {!number} bound_time2  Bound time
@@ -30,14 +35,14 @@ class Database {
      busstop_set(route_id, bound, index, bsicode,
 				name_en, name_tc, name_sc,
 				location_en, location_tc, location_sc,
-				x, y,
+				x, y, lat, lon,
 				fare,
 				bound_time1, bound_time2, cb) {
-        var sql = "CALL sp_busstop_set(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        var sql = "CALL sp_busstop_set(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         var param = [route_id, parseInt(bound), parseInt(index), bsicode,
 						name_en, name_tc, name_sc,
 						location_en, location_tc, location_sc,
-						x, y,
+						x, y, lat, lon,
 						fare,
 						bound_time1, bound_time2];
         this._pool.query(sql, param, (err,rows,fields) => {
@@ -46,6 +51,44 @@ class Database {
                 if (cb) cb(false);
             } else {
                 if (cb) cb(true);
+            }
+        });
+    }
+    /**
+     * List bus-stop of a route
+     * @public
+     * @param {!string} route_id Route Id, e.g. 12A
+     * @param {!number} bound    Bound type, 1: normal, 2: reverse
+     * @param {!function(Array<Object>)} cb void callback(stops)
+     * @return {undefined} No return value
+     */
+     busstop_list(route_id, bound, cb) {
+        var sql = "CALL sp_busstop_list(?,?)";
+        var param = [route_id, parseInt(bound)];
+        this._pool.query(sql, param, (err,rows,fields) => {
+            if (err) {
+                console.log(sql + param + err);
+                if (cb) cb([]);
+            } else {
+            	var list = [];
+            	for (var i=0; i<rows[0].length; i++) {
+                    var row = rows[0][i];
+                    list.push({
+                        route_id   : row["route_id"],
+                        bound      : parseInt(row["bound"]),
+                        index      : parseInt(row["stop_index"]),
+                        name_en    : row["name_en"],
+                        location_en: row["location_en"],
+                        bsicode    : row["bsicode"],
+                        x          : row["x"],
+                        y          : row["y"],
+                        lat        : row["lat"],
+                        lon        : row["lon"],
+                        fare       : row["fare"],
+                        eta        : row["eta"]
+                    });
+                }
+                cb(list);
             }
         });
     }
