@@ -4,7 +4,26 @@ const http = require('http');
 class KMBGrabber {
 	constructor() {
 	}
-	get_route(route, bound, cb) {
+	get_bounds(route, cb) {
+	    return http.get({
+    	    hostname: 'search.kmb.hk',
+        	path: '/KMBWebSite/Function/FunctionRequest.ashx?action=getroutebound&route=' + route
+    	}, (response) => {
+        	var body = '';
+        	response.on('data', (d) => { body += d;} );
+	        response.on('end', () => {
+	        	var json = JSON.parse(body);
+	        	var list = [];
+	        	if (json['result']) {
+					for (var item of json['data']) {
+						list.push(parseInt(item['BOUND']));
+					}
+				}
+				cb(list);
+        	});
+	    });
+	}
+	get_stops(route, bound, cb) {
 	    return http.get({
     	    hostname: 'search.kmb.hk',
         	path: '/KMBWebSite/Function/FunctionRequest.ashx?action=getstops&route=' + route + '&bound=' + bound + '&serviceType=1'

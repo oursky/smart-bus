@@ -12,7 +12,7 @@ CREATE TABLE t_route (
   overnight   BOOL NOT NULL DEFAULT FALSE,
   special     BOOL NOT NULL DEFAULT FALSE,
   PRIMARY KEY (route_id, bound) 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
@@ -36,4 +36,4 @@ CREATE TABLE t_busstop(
   mtime       TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   eta         VARCHAR(255)     NOT NULL DEFAULT '',
   PRIMARY KEY (route_id, bound, stop_index) 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
