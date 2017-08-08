@@ -19,7 +19,7 @@ DROP TABLE IF EXISTS t_busstop;
 CREATE TABLE t_busstop(
   route_id    VARCHAR(16)      NOT NULL,
   bound       TINYINT UNSIGNED NOT NULL,
-  stop_index  INT UNSIGNED     NOT NULL,
+  seq         INT UNSIGNED     NOT NULL,
   bsicode     VARCHAR(32)      NOT NULL,
   name_en     VARCHAR(255)     NOT NULL,
   name_tc     VARCHAR(255)     NOT NULL,
@@ -36,5 +36,5 @@ CREATE TABLE t_busstop(
   bound_time2 INT UNSIGNED     NOT NULL DEFAULT 0,
   mtime       TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   eta         VARCHAR(255)     NOT NULL DEFAULT '',
-  PRIMARY KEY (route_id, bound, stop_index) 
+  PRIMARY KEY (route_id, bound, seq) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

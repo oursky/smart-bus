@@ -76,7 +76,7 @@ class Database {
                     list.push({
                         route_id   : row["route_id"],
                         bound      : parseInt(row["bound"]),
-                        index      : parseInt(row["stop_index"]),
+                        seq        : parseInt(row["seq"]),
                         name_en    : row["name_en"],
                         location_en: row["location_en"],
                         bsicode    : row["bsicode"],

@@ -60,10 +60,10 @@ Run Data Grabber
 1. Update bus stop information
 ```
 > cd src
-> nodejs kmb_updateroutes.js config.json 12A
+> nodejs kmb_updateroute.js 12A
 ```
 2. Update arrival estimation
 ```
 > cd src
-> nodejs kmb_updateeta.js config.json 12A 1
+> nodejs kmb_updateeta.js 12A 1
 ```

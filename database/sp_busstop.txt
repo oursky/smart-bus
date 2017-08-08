@@ -4,7 +4,7 @@ DROP PROCEDURE IF EXISTS sp_busstop_set //
 CREATE PROCEDURE sp_busstop_set(
   _route_id    VARCHAR(16),
   _bound       TINYINT UNSIGNED,
-  _stop_index  INT UNSIGNED,
+  _seq         INT UNSIGNED,
   _bsicode     VARCHAR(32),
   _name_en     VARCHAR(255),
   _name_tc     VARCHAR(255),
@@ -21,13 +21,13 @@ CREATE PROCEDURE sp_busstop_set(
   _bound_time2 INT UNSIGNED
 )
 BEGIN
-    INSERT INTO t_busstop(route_id,bound,stop_index,bsicode,
+    INSERT INTO t_busstop(route_id,bound,seq,bsicode,
                           name_en, name_tc, name_sc,
                           location_en, location_tc, location_sc,
                           x, y, lat, lon, fare,
                           bound_time1, bound_time2,
                           mtime)
-      VALUES (_route_id,_bound,_stop_index,_bsicode,
+      VALUES (_route_id,_bound,_seq,_bsicode,
                           _name_en, _name_tc, _name_sc,
                           _location_en, _location_tc, _location_sc,
                           _x, _y, _lat, _lon, _fare,
@@ -53,14 +53,14 @@ END //
 
 DROP PROCEDURE IF EXISTS sp_busstop_seteta //
 CREATE PROCEDURE sp_busstop_seteta(
-  _route_id    VARCHAR(16),
-  _bound       TINYINT UNSIGNED,
-  _stop_index  INT UNSIGNED,
-  _eta         VARCHAR(255)
+  _route_id VARCHAR(16),
+  _bound    TINYINT UNSIGNED,
+  _seq      INT UNSIGNED,
+  _eta      VARCHAR(255)
 )
 BEGIN
     UPDATE t_busstop SET eta=_eta
-    WHERE route_id=_route_id AND bound=_bound AND stop_index=_stop_index;
+    WHERE route_id=_route_id AND bound=_bound AND seq=_seq;
 END //
 
 DROP PROCEDURE IF EXISTS sp_busstop_list //
@@ -69,11 +69,12 @@ CREATE PROCEDURE sp_busstop_list(
   _bound       TINYINT UNSIGNED
 )
 BEGIN
-  SELECT route_id,bound,stop_index,bsicode,
+  SELECT route_id,bound,seq,bsicode,
   		name_en, name_tc, name_sc,
         location_en, location_tc, location_sc,
         x, y, lat, lon, fare,
         bound_time1, bound_time2,
+        eta,
         mtime
     FROM t_busstop
     WHERE route_id=_route_id AND bound=_bound;
