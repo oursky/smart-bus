@@ -60,7 +60,8 @@ CREATE PROCEDURE sp_busstop_seteta(
 )
 BEGIN
   UPDATE t_busstop SET eta=_eta
-  WHERE route=_route AND bound=_bound AND seq=_seq;
+  WHERE route=_route AND bound=_bound AND seq=_seq
+  ORDER BY bound ASC, seq ASC;
 END //
 
 DROP PROCEDURE IF EXISTS sp_busstop_list //
