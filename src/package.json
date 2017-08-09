@@ -12,6 +12,8 @@
     "start-prod": "node --harmony app.js app_prod.json"
   },
   "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.4",
     "mysql": "^2.13.0"
   }
 }
