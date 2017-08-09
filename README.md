@@ -67,3 +67,25 @@ Run Data Grabber
 > cd src
 > nodejs kmb_updateeta.js 12A 1
 ```
+PS. You might want to setup cron job for this
+
+Setup (Portal Server)
+==================================
+1. Install Node.JS 8
+```
+https://nodejs.org/en/download/package-manager/
+```
+2. Install npm packages
+```
+> cd src
+> npm install
+```
+
+Run Portal
+==================================
+NOTE: Adjust config.json if needed
+```
+> cd src
+> nodejs portal.js
+```
+NOTE: As PoC the route is hardcoded on index.html

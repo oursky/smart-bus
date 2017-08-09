@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Traffic Visualizer</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="portal.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        var map;
+        function initMap() {
+            // Create map, center at Hong Kong
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 22.31516284, lng: 114.17400835},
+                zoom: 15
+            });
+            loadBusStops("12A");
+            updateBusPosition("12A");
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAnM1wiIC_4wLp3xOLndXO3zME8xM84ruU&callback=initMap" async defer></script>
+    <script>
+        var busstopMarkers = [];
+        var busMarkers = [];
+        function loadBusStops(route) {
+            busstopMarkers.forEach(function(marker){
+                marker.setMap(null);
+            });
+            busstopMarkers = [];
+            $.ajax({
+                type: "POST",
+                url: "/api/bus_stop_list",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ route: route }),
+                success: function(data){
+                    data["stops"].forEach(function(stop){
+                        if (stop.bound==1) {
+                            var marker = new google.maps.Marker({
+                                position: {lat: stop.lat, lng: stop.lon},
+                                map: map,
+                                icon: {
+                                    url: 'busstop.png',
+                                    scaledSize: new google.maps.Size(24, 24)
+                                }                                
+                            });
+                            busstopMarkers.push(marker);
+                        }
+                    });
+                },
+                failure: function(err) {
+                    // alert(err);
+                }
+            });
+        }
+        function updateBusPosition(route) {
+            busMarkers.forEach(function(marker){
+                marker.setMap(null);
+            });
+            busMarkers = [];
+            $.ajax({
+                type: "POST",
+                url: "/api/bus_list",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ route: route }),
+                success: function(data){
+                    data["buses"].forEach(function(bus){
+                        if (bus.bound==1) {
+                            var marker = new google.maps.Marker({
+                                position: {lat: bus.lat, lng: bus.lon},
+                                map: map,
+                                icon: {
+                                    url: 'bus.png',
+                                    scaledSize: new google.maps.Size(24, 24)
+                                }                                
+                            });
+                            busMarkers.push(marker);
+                        }
+                    });
+                    setTimeout(updateBusPosition, 500, route);
+                },
+                failure: function(err) {
+                    setTimeout(updateBusPosition, 500, route);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

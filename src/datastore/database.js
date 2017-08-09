@@ -2,13 +2,15 @@
  * Database wrapper
  */ 
 module.exports = (function(){
+// Imports
+// -----------------------------------------------------------------
 const mysql = require('mysql');
 
+// -----------------------------------------------------------------
 class Database {
-	constructor(config) {
-		this._pool = mysql.createPool(config);
-	}
-	
+    constructor(config) {
+        this._pool = mysql.createPool(config);
+    }
     /**
      * Set Bus-stop Information
      * @public
@@ -33,18 +35,18 @@ class Database {
      * @return {undefined} No return value
      */
      busstop_set(route_id, bound, index, bsicode,
-				name_en, name_tc, name_sc,
-				location_en, location_tc, location_sc,
-				x, y, lat, lon,
-				fare,
-				bound_time1, bound_time2, cb) {
+                name_en, name_tc, name_sc,
+                location_en, location_tc, location_sc,
+                x, y, lat, lon,
+                fare,
+                bound_time1, bound_time2, cb) {
         var sql = "CALL sp_busstop_set(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         var param = [route_id, parseInt(bound), parseInt(index), bsicode,
-						name_en, name_tc, name_sc,
-						location_en, location_tc, location_sc,
-						x, y, lat, lon,
-						fare,
-						bound_time1, bound_time2];
+                    name_en, name_tc, name_sc,
+                    location_en, location_tc, location_sc,
+                    x, y, lat, lon,
+                    fare,
+                    bound_time1, bound_time2];
         this._pool.query(sql, param, (err,rows,fields) => {
             if (err) {
                 console.log(sql + param + err);
@@ -58,13 +60,12 @@ class Database {
      * List bus-stop of a route
      * @public
      * @param {!string} route_id Route Id, e.g. 12A
-     * @param {!number} bound    Bound type, 1: normal, 2: reverse
      * @param {!function(Array<Object>)} cb void callback(stops)
      * @return {undefined} No return value
      */
-     busstop_list(route_id, bound, cb) {
-        var sql = "CALL sp_busstop_list(?,?)";
-        var param = [route_id, parseInt(bound)];
+     busstop_list(route_id, cb) {
+        var sql = "CALL sp_busstop_list(?)";
+        var param = [route_id];
         this._pool.query(sql, param, (err,rows,fields) => {
             if (err) {
                 console.log(sql + param + err);
@@ -74,7 +75,7 @@ class Database {
             	for (var i=0; i<rows[0].length; i++) {
                     var row = rows[0][i];
                     list.push({
-                        route_id   : row["route_id"],
+                        route      : row["route"],
                         bound      : parseInt(row["bound"]),
                         seq        : parseInt(row["seq"]),
                         name_en    : row["name_en"],
@@ -117,6 +118,6 @@ class Database {
 };
 
 // EXPORTS
-// ------------------------------------------------
+// -----------------------------------------------------------------
 return Database;
 }());   
