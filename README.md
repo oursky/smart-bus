@@ -65,7 +65,7 @@ Run Data Grabber
 2. Update arrival estimation
 ```
 > cd src
-> nodejs kmb_updateeta.js 12A 1
+> nodejs kmb_updateeta.js 12A
 ```
 PS. You might want to setup cron job for this
 
