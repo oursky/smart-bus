@@ -1,1 +1,51 @@
-ssss
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Traffic Visualizer</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="portal.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        var map;
+        function initMap() {
+            // Create map, center at Hong Kong
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 22.31516284, lng: 114.17400835},
+                zoom: 13
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAnM1wiIC_4wLp3xOLndXO3zME8xM84ruU&callback=initMap" async defer></script>
+    <script>
+        function loadBusStops(route) {
+            $.ajax({
+                type: "POST",
+                url: "/api/bus_stop_list",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ route: route }),
+                success: function(data){
+                    data["stops"].forEach(function(stop){
+                        var stopMarker = new google.maps.Marker({
+                            position: {lat: stop.lat, lng: stop.lon},
+                            map: map,
+                            icon: {
+                                url: 'busstop.png',
+                                scaledSize: new google.maps.Size(32, 32)
+                            }                                
+                        });
+                    });
+                },
+                failure: function(err) {
+                    // alert(err);
+                }
+            });
+        }
+        $().ready( loadBusStops("12A") );
+    </script>
+</body>
+</html>
