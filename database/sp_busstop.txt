@@ -2,7 +2,7 @@ delimiter //
 
 DROP PROCEDURE IF EXISTS sp_busstop_set //
 CREATE PROCEDURE sp_busstop_set(
-  _route_id    VARCHAR(16),
+  _route       VARCHAR(16),
   _bound       TINYINT UNSIGNED,
   _seq         INT UNSIGNED,
   _bsicode     VARCHAR(32),
@@ -21,19 +21,19 @@ CREATE PROCEDURE sp_busstop_set(
   _bound_time2 INT UNSIGNED
 )
 BEGIN
-    INSERT INTO t_busstop(route_id,bound,seq,bsicode,
+    INSERT INTO t_busstop(route,bound,seq,bsicode,
                           name_en, name_tc, name_sc,
                           location_en, location_tc, location_sc,
                           x, y, lat, lon, fare,
                           bound_time1, bound_time2,
                           mtime)
-      VALUES (_route_id,_bound,_seq,_bsicode,
+    VALUES (_route,_bound,_seq,_bsicode,
                           _name_en, _name_tc, _name_sc,
                           _location_en, _location_tc, _location_sc,
                           _x, _y, _lat, _lon, _fare,
                           _bound_time1, _bound_time2,
                           CURRENT_TIMESTAMP)
-      ON DUPLICATE KEY UPDATE 
+    ON DUPLICATE KEY UPDATE 
           bsicode=_bsicode,
           name_en=_name_en,
           name_tc=_name_tc,
@@ -53,31 +53,30 @@ END //
 
 DROP PROCEDURE IF EXISTS sp_busstop_seteta //
 CREATE PROCEDURE sp_busstop_seteta(
-  _route_id VARCHAR(16),
-  _bound    TINYINT UNSIGNED,
-  _seq      INT UNSIGNED,
-  _eta      VARCHAR(255)
+  _route VARCHAR(16),
+  _bound TINYINT UNSIGNED,
+  _seq   INT UNSIGNED,
+  _eta   VARCHAR(255)
 )
 BEGIN
-    UPDATE t_busstop SET eta=_eta
-    WHERE route_id=_route_id AND bound=_bound AND seq=_seq;
+  UPDATE t_busstop SET eta=_eta
+  WHERE route=_route AND bound=_bound AND seq=_seq;
 END //
 
 DROP PROCEDURE IF EXISTS sp_busstop_list //
 CREATE PROCEDURE sp_busstop_list(
-  _route_id    VARCHAR(16),
-  _bound       TINYINT UNSIGNED
+  _route VARCHAR(16)
 )
 BEGIN
-  SELECT route_id,bound,seq,bsicode,
-  		name_en, name_tc, name_sc,
-        location_en, location_tc, location_sc,
-        x, y, lat, lon, fare,
-        bound_time1, bound_time2,
-        eta,
-        mtime
-    FROM t_busstop
-    WHERE route_id=_route_id AND bound=_bound;
+  SELECT route,bound,seq,bsicode,
+    name_en, name_tc, name_sc,
+    location_en, location_tc, location_sc,
+    x, y, lat, lon, fare,
+    bound_time1, bound_time2,
+    eta,
+    mtime
+  FROM t_busstop
+  WHERE route=_route;
 END //
 
 delimiter ;

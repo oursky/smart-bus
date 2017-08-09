@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS t_route;
 CREATE TABLE t_route (
-  route_id    VARCHAR(16)      NOT NULL,
+  route       VARCHAR(16)      NOT NULL,
   bound       TINYINT UNSIGNED NOT NULL,
   origin_en   VARCHAR(255)     NOT NULL,
   origin_tc   VARCHAR(255)     NOT NULL,
@@ -11,13 +11,13 @@ CREATE TABLE t_route (
   airport     BOOL NOT NULL DEFAULT FALSE,
   overnight   BOOL NOT NULL DEFAULT FALSE,
   special     BOOL NOT NULL DEFAULT FALSE,
-  PRIMARY KEY (route_id, bound) 
+  PRIMARY KEY (route, bound) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS t_busstop;
 CREATE TABLE t_busstop(
-  route_id    VARCHAR(16)      NOT NULL,
+  route       VARCHAR(16)      NOT NULL,
   bound       TINYINT UNSIGNED NOT NULL,
   seq         INT UNSIGNED     NOT NULL,
   bsicode     VARCHAR(32)      NOT NULL,
@@ -36,5 +36,5 @@ CREATE TABLE t_busstop(
   bound_time2 INT UNSIGNED     NOT NULL DEFAULT 0,
   mtime       TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   eta         VARCHAR(255)     NOT NULL DEFAULT '',
-  PRIMARY KEY (route_id, bound, seq) 
+  PRIMARY KEY (route, bound, seq) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
