@@ -11,6 +11,10 @@
     <div id="map"></div>
     <script>
         var map;
+        var busstopMarkers = {};
+        var busstopPath = {};
+        var busMarkers = [];
+        
         function initMap() {
             // Create map, center at Hong Kong
             map = new google.maps.Map(document.getElementById('map'), {
@@ -20,16 +24,7 @@
             loadBusStops("12A");
             updateBusPosition("12A");
         }
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAnM1wiIC_4wLp3xOLndXO3zME8xM84ruU&callback=initMap" async defer></script>
-    <script>
-        var busstopMarkers = [];
-        var busMarkers = [];
         function loadBusStops(route) {
-            busstopMarkers.forEach(function(marker){
-                marker.setMap(null);
-            });
-            busstopMarkers = [];
             $.ajax({
                 type: "POST",
                 url: "/api/bus_stop_list",
@@ -37,19 +32,52 @@
                 dataType: "json",
                 data: JSON.stringify({ route: route }),
                 success: function(data){
-                    data["stops"].forEach(function(stop){
-                        if (stop.bound==1) {
-                            var marker = new google.maps.Marker({
-                                position: {lat: stop.lat, lng: stop.lon},
+                    // remove path
+                    for(var key in busstopPath) {
+                        busstopPath[key].setMap(null);
+                        delete busstopPath[key];
+                    }
+                    
+                    var stoplist = [];
+                    for (var stop of data['stops']) {
+                        if (stop.bound!=1) continue;    // we only demo one direction
+
+                        stoplist.push(stop.bsicode);
+                        var position = new google.maps.LatLng( stop.lat, stop.lng );
+                        var marker = busstopMarkers[stop.bsicode];
+                        if (marker) {
+                            marker.setPosition(position);
+                        } else {
+                            marker = new google.maps.Marker({
+                                position: position,
                                 map: map,
                                 icon: {
                                     url: 'busstop.png',
+                                    anchor: new google.maps.Point(12, 12),
                                     scaledSize: new google.maps.Size(24, 24)
                                 }                                
                             });
-                            busstopMarkers.push(marker);
+                            busstopMarkers[stop.bsicode] = marker;
                         }
-                    });
+                        // draw path
+                        if (stop.path) {
+                            var path = new google.maps.Polyline({
+                                path: stop.path,
+                                geodesic: true,
+                                strokeColor: '#FF0000',
+                                strokeOpacity: 1.0,
+                                strokeWeight: 2
+                            });
+                            path.setMap(map);
+                            busstopPath[stop.bsicode] = path;
+                        }
+                    }
+                    for (var key in busstopMarkers) {
+                        if (stoplist.indexOf(key)==-1) {
+                            busstopMarkers[key].setMap(null);
+                            delete busstopMarkers[key];
+                        }
+                    }
                 },
                 failure: function(err) {
                     // alert(err);
@@ -57,10 +85,6 @@
             });
         }
         function updateBusPosition(route) {
-            busMarkers.forEach(function(marker){
-                marker.setMap(null);
-            });
-            busMarkers = [];
             $.ajax({
                 type: "POST",
                 url: "/api/bus_list",
@@ -68,19 +92,33 @@
                 dataType: "json",
                 data: JSON.stringify({ route: route }),
                 success: function(data){
-                    data["buses"].forEach(function(bus){
-                        if (bus.bound==1) {
+                    for (var i=0; i<data["buses"].length; i++){
+                        var bus = data["buses"][i];
+                        if (bus.bound!=1) continue;
+                        var position = new google.maps.LatLng( bus.lat, bus.lng );
+                        
+                        if (i<busMarkers.length) {  // reuse marker to prevent flicker
+                            busMarkers[i].setPosition(position);
+                        } else {
                             var marker = new google.maps.Marker({
-                                position: {lat: bus.lat, lng: bus.lon},
+                                position: position,
                                 map: map,
                                 icon: {
                                     url: 'bus.png',
+                                    anchor: new google.maps.Point(12, 12),
                                     scaledSize: new google.maps.Size(24, 24)
                                 }                                
                             });
                             busMarkers.push(marker);
                         }
-                    });
+                    }
+                    // remove extra bus icon
+                    if (data["buses"].length < busMarkers.length) {
+                        for (var i=data["buses"].length; i<busMarkers.length; i++) {
+                            busMarkers[i].setMap(null);
+                        }
+                        busMarkers = busMarkers.slice(0, data["buses"].length);
+                    }
                     setTimeout(updateBusPosition, 500, route);
                 },
                 failure: function(err) {
@@ -89,5 +127,6 @@
             });
         }
     </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAnM1wiIC_4wLp3xOLndXO3zME8xM84ruU&callback=initMap" async defer></script>
 </body>
 </html>

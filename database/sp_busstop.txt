@@ -15,7 +15,8 @@ CREATE PROCEDURE sp_busstop_set(
   _x           DOUBLE,
   _y           DOUBLE,
   _lat         DOUBLE,
-  _lon         DOUBLE,
+  _lng         DOUBLE,
+  _path        VARCHAR(16384),
   _fare        FLOAT,
   _bound_time1 INT UNSIGNED,
   _bound_time2 INT UNSIGNED
@@ -24,13 +25,15 @@ BEGIN
     INSERT INTO t_busstop(route,bound,seq,bsicode,
                           name_en, name_tc, name_sc,
                           location_en, location_tc, location_sc,
-                          x, y, lat, lon, fare,
+                          x, y, lat, lng, path,
+                          fare,
                           bound_time1, bound_time2,
                           mtime)
     VALUES (_route,_bound,_seq,_bsicode,
                           _name_en, _name_tc, _name_sc,
                           _location_en, _location_tc, _location_sc,
-                          _x, _y, _lat, _lon, _fare,
+                          _x, _y, _lat, _lng, _path,
+                          _fare,
                           _bound_time1, _bound_time2,
                           CURRENT_TIMESTAMP)
     ON DUPLICATE KEY UPDATE 
@@ -44,7 +47,8 @@ BEGIN
           x=_x,
           y=_y,
           lat=_lat,
-          lon=_lon,
+          lng=_lng,
+          path=_path,
           fare=_fare,
           bound_time1=_bound_time1,
           bound_time2=_bound_time2,
@@ -72,7 +76,8 @@ BEGIN
   SELECT route,bound,seq,bsicode,
     name_en, name_tc, name_sc,
     location_en, location_tc, location_sc,
-    x, y, lat, lon, fare,
+    x, y, lat, lng, path,
+    fare,
     bound_time1, bound_time2,
     eta,
     mtime

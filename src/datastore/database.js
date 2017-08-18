@@ -27,7 +27,8 @@ class Database {
      * @param {!number} x            Location of bus stop in HK80 coordinate
      * @param {!number} y            Location of bus stop in HK80 coordinate
      * @param {!number} lat          Latitude of bus stop
-     * @param {!number} lon          Longitude of bus stop
+     * @param {!number} lng          Longitude of bus stop
+     * @param {!Object} path         Path in array of {lat,lng} pair to next bus stop
      * @param {!number} fare         Fare
      * @param {!number} bound_time1  Bound time
      * @param {!number} bound_time2  Bound time
@@ -37,14 +38,14 @@ class Database {
      busstop_set(route_id, bound, index, bsicode,
                 name_en, name_tc, name_sc,
                 location_en, location_tc, location_sc,
-                x, y, lat, lon,
+                x, y, lat, lng, path,
                 fare,
                 bound_time1, bound_time2, cb) {
-        var sql = "CALL sp_busstop_set(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        var sql = "CALL sp_busstop_set(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         var param = [route_id, parseInt(bound), parseInt(index), bsicode,
                     name_en, name_tc, name_sc,
                     location_en, location_tc, location_sc,
-                    x, y, lat, lon,
+                    x, y, lat, lng, JSON.stringify(path),
                     fare,
                     bound_time1, bound_time2];
         this._pool.query(sql, param, (err,rows,fields) => {
@@ -84,7 +85,8 @@ class Database {
                         x          : row["x"],
                         y          : row["y"],
                         lat        : row["lat"],
-                        lon        : row["lon"],
+                        lng        : row["lng"],
+                        path       : JSON.parse(row["path"]),
                         fare       : row["fare"],
                         eta        : row["eta"]
                     });
