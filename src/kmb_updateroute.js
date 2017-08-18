@@ -37,7 +37,7 @@ function update_route(datasrc,route) {
                         jobs ++;
                         hk80.get_latlng(pos.x, pos.y, (lat,lng) => {
                             jobs --;
-                            cb(null, {lat:lat, lng:lng});
+                            cb(null, [lat, lng]);
                         });
                     }, (err, results) => {
                         // Bus stop main info
@@ -48,7 +48,7 @@ function update_route(datasrc,route) {
                             // stop.location_en, stop.location_tc, stop.location_sc,
                             stop.name_en, '',  '',
                             stop.location_en, '', '',
-                            stop.x, stop.y, results[0].lat, results[0].lng,
+                            stop.x, stop.y, results[0][0], results[0][1],
                             results,
                             stop.fare,
                             0, 0,
