@@ -61,8 +61,12 @@
                         }
                         // draw path
                         if (stop.path) {
+                            var latlnglist = [];
+                            for (var p of stop.path) {
+                                latlnglist.push(new google.maps.LatLng(p[0], p[1]));
+                            }
                             var path = new google.maps.Polyline({
-                                path: stop.path,
+                                path: latlnglist,
                                 geodesic: true,
                                 strokeColor: '#FF0000',
                                 strokeOpacity: 1.0,

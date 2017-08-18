@@ -46,11 +46,11 @@ function handler(req,res) {
             if (fromstop.bound!=tostop.bound) continue;
             if (fromstop.seq==0) continue;
             
-            fromstop.path.push({lat: tostop.lat, lng: tostop.lng});
+            fromstop.path.push([tostop.lat, tostop.lng]);
             
             var total_distance = 0;
             for (var i=0; i<fromstop.path.length-1; i++) {
-                var d = distance(fromstop.path[i].lat, fromstop.path[i].lng, fromstop.path[i+1].lat, fromstop.path[i+1].lng);
+                var d = distance(fromstop.path[i][0], fromstop.path[i][1], fromstop.path[i+1][0], fromstop.path[i+1][1]);
                 fromstop.path[i].distance = d;
                 total_distance += d;
             }
@@ -69,8 +69,8 @@ function handler(req,res) {
                 var travelled = total_distance * progress;
                 for (var i=0; i<fromstop.path.length-1; i++) {
                     if (travelled < fromstop.path[i].distance) {
-                        busPosition.lat = fromstop.path[i].lat + (fromstop.path[i+1].lat - fromstop.path[i].lat) * travelled/fromstop.path[i].distance;
-                        busPosition.lng = fromstop.path[i].lng + (fromstop.path[i+1].lng - fromstop.path[i].lng) * travelled/fromstop.path[i].distance;
+                        busPosition.lat = fromstop.path[i][0] + (fromstop.path[i+1][0] - fromstop.path[i][0]) * travelled/fromstop.path[i].distance;
+                        busPosition.lng = fromstop.path[i][1] + (fromstop.path[i+1][1] - fromstop.path[i][1]) * travelled/fromstop.path[i].distance;
                         break;
                     } else {
                         travelled -= fromstop.path[i].distance;
