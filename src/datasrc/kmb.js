@@ -81,10 +81,18 @@ class KMBDataSource {
                             location_en: stop['ELocation'],
                             location_tc: stop['CLocation'],
                             location_sc: stop['SCLocation'],
-                            x          : stop['X'],
-                            y          : stop['Y'],
+                            x          : parseFloat(stop['X']),
+                            y          : parseFloat(stop['Y']),
                             fare       : stop['AirFare'],
                         });
+                    }
+                    var jpath = JSON.parse(json['data']['route']['lineGeometry'].replace(/paths:/, '"paths":'))['paths'];
+                    for (var i=0; i<jpath.length; i++) {
+                        var path = [];
+                        for (var pos of jpath[i]) {
+                            path.push({x: pos[0], y:pos[1]});
+                        }
+                        stops[i].path = path;
                     }
                     cb(basic, stops);
                 });

@@ -9,6 +9,7 @@
 // Imports
 // -----------------------------------------------------------------
 const fs = require('fs');
+const Async = require('async');
 const Database = require('./datastore/database.js');
 const KMB  = require('./datasrc/kmb.js');
 const HK80 = require('./datasrc/hk80.js');
@@ -29,21 +30,30 @@ function update_route(datasrc,route) {
             jobs ++;
             datasrc.get_stops(route, bound, (basic,stops) => {
                 stops.forEach((stop)=> {
-                    jobs ++;
-                    hk80.get_latlon(stop.x, stop.y, (lat,lon) => {
+                    var locations = [{x:stop.x,y:stop.y}];
+                    if (stop.path) locations = locations.concat(stop.path);
+                    // TODO: hk80 has a block request to resolve a list of locations
+                    Async.map(locations, (pos,cb) => {
                         jobs ++;
+                        hk80.get_latlng(pos.x, pos.y, (lat,lng) => {
+                            jobs --;
+                            cb(null, {lat:lat, lng:lng});
+                        });
+                    }, (err, results) => {
+                        // Bus stop main info
+                        jobs++;
                         db.busstop_set(
                             stop.route, stop.bound, stop.seq, stop.bsicode,
                             // stop.name_en, stop.name_tc, stop.name_sc,
                             // stop.location_en, stop.location_tc, stop.location_sc,
                             stop.name_en, '',  '',
                             stop.location_en, '', '',
-                            stop.x, stop.y, lat, lon,
+                            stop.x, stop.y, results[0].lat, results[0].lng,
+                            results,
                             stop.fare,
                             0, 0,
                             () => jobs-- );
-                        jobs --;
-                    }); // hk80.get_latlon
+                    }); // Async
                 });	// stops.forEach
                 jobs --;
             });	// datasrc.get_stops

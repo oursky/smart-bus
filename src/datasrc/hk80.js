@@ -14,14 +14,14 @@ class HK80Convertor {
     constructor() {
     }
     /**
-     * Get Lat,Lon from HK80 Coordinate
+     * Get Lat,Lng from HK80 Coordinate
      * @public
      * @param {!number} x        x coordinate in HK80
      * @param {!number} y	     y coordinate in HK80
-     * @param {!function(number,number)} cb void callback(lat,lon)
+     * @param {!function(number,number)} cb void callback(lat,lng)
      * @return {undefined} No return value
      */
-    get_latlon(x,y,cb) {
+    get_latlng(x,y,cb) {
         // TODO: handle error
         return http.get({
                 hostname: 'www.geodetic.gov.hk',
@@ -30,8 +30,8 @@ class HK80Convertor {
                 var body = '';
                 response.on('data', (d) => { body += d;} );
                 response.on('end', () => {
-                    var latlon = body.split(","); 
-                    cb(latlon[0],latlon[1]);
+                    var latlng = body.split(","); 
+                    cb(parseFloat(latlng[0]),parseFloat(latlng[1]));
                 });
             });
     }
