@@ -44,7 +44,6 @@ function handler(req,res) {
             var fromstop = stops[stopIndex];
             var tostop = stops[stopIndex+1];
             if (fromstop.bound!=tostop.bound) continue;
-            if (fromstop.seq==0) continue;
             
             fromstop.path.push([tostop.lat, tostop.lng]);
             
@@ -63,7 +62,7 @@ function handler(req,res) {
                 // TODO: fetch schedule table from KMB
                 var schedule_time = 15*60*1000;
                 if (dT <0 || dT> schedule_time) continue;
-                var progress = dT / schedule_time;
+                var progress = (schedule_time-dT) / schedule_time;
                 var busPosition = { lat: fromstop.path[0].lat, lng: fromstop.path[0].lng };
                 
                 var travelled = total_distance * progress;
